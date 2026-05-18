@@ -1,0 +1,234 @@
+<link href="https://fonts.googleapis.com/css2?family=Encode+Sans+Condensed:wght@400;500;600;700&family=Encode+Sans:wght@400;500&display=swap" rel="stylesheet">
+<h2 class="sr-only">Obility Claude + Asana skill library — browse and filter skills by use case and department</h2>
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Encode Sans', sans-serif; color: var(--color-text-primary); background: transparent; }
+.ob-header { background: #000039; border-radius: 12px; padding: 1.25rem 1.75rem; margin-bottom: 1.25rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.ob-logo { display: flex; align-items: center; gap: 10px; }
+.ob-logo-mark { width: 32px; height: 32px; flex-shrink: 0; }
+.ob-logo-text { font-family: 'Encode Sans Condensed', sans-serif; font-size: 22px; font-weight: 700; color: #ffffff; letter-spacing: 0.04em; }
+.ob-logo-text span { color: #FF9100; }
+.ob-tagline { font-family: 'Encode Sans', sans-serif; font-size: 13px; color: #B19EF1; margin-top: 2px; }
+.ob-badge { background: #FF9100; border-radius: 999px; padding: 5px 14px; font-size: 12px; color: #000039; font-weight: 500; font-family: 'Encode Sans', sans-serif; }
+.filter-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 0.6rem; }
+.filter-label { font-size: 12px; color: var(--color-text-secondary); font-family: 'Encode Sans', sans-serif; white-space: nowrap; min-width: 70px; }
+.filters { display: flex; gap: 6px; flex-wrap: wrap; }
+.filter-btn { font-size: 12px; font-family: 'Encode Sans', sans-serif; padding: 5px 12px; border-radius: 999px; border: 0.5px solid var(--color-border-secondary); background: transparent; color: var(--color-text-secondary); cursor: pointer; transition: all 0.15s; }
+.filter-btn:hover { background: var(--color-background-secondary); }
+.filter-btn.active { background: #000039; border-color: #000039; color: #fff; font-weight: 500; }
+.filter-btn.dept-active { background: #FF9100; border-color: #FF9100; color: #000039; font-weight: 500; }
+.controls { margin-bottom: 1rem; }
+.search-wrap { position: relative; margin-bottom: 0.75rem; }
+.search-wrap i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 16px; color: var(--color-text-secondary); pointer-events: none; }
+.search-wrap input { padding-left: 34px; width: 100%; font-family: 'Encode Sans', sans-serif; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; padding-bottom: 1.5rem; }
+.card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: 8px; transition: border-color 0.15s; }
+.card:hover { border-color: var(--color-border-secondary); }
+.card.coming-soon { opacity: 0.75; }
+.card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.card-icon { width: 36px; height: 36px; border-radius: var(--border-radius-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.card-icon i { font-size: 18px; }
+.badges { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.badge { font-size: 11px; font-weight: 500; font-family: 'Encode Sans', sans-serif; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
+.badge-task { background: #eeeaff; color: #3a1f99; }
+.badge-report { background: #fff0e0; color: #7a3d00; }
+.badge-auto { background: #e0f0ff; color: #003d7a; }
+.badge-soon { background: #F0F0F5; color: #555566; border: 0.5px solid #ccccd8; }
+.icon-task { background: #eeeaff; color: #8C5AFF; }
+.icon-report { background: #fff0e0; color: #FF9100; }
+.icon-auto { background: #ffe0e6; color: #FF5078; }
+.card-title { font-family: 'Encode Sans Condensed', sans-serif; font-size: 16px; font-weight: 600; line-height: 1.3; color: var(--color-text-primary); }
+.card-desc { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; font-family: 'Encode Sans', sans-serif; }
+.dept-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
+.dept-tag { font-size: 10px; font-family: 'Encode Sans', sans-serif; padding: 2px 8px; border-radius: 999px; background: var(--color-background-secondary); color: var(--color-text-secondary); border: 0.5px solid var(--color-border-tertiary); }
+.empty { text-align: center; padding: 3rem 1rem; color: var(--color-text-secondary); font-size: 14px; grid-column: 1/-1; font-family: 'Encode Sans', sans-serif; }
+.count { font-size: 13px; color: var(--color-text-secondary); margin-bottom: 0.5rem; font-family: 'Encode Sans', sans-serif; }
+</style>
+
+<div class="ob-header">
+  <div class="ob-logo">
+    <svg class="ob-logo-mark" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="32" height="32" rx="6" fill="#FF9100"/>
+      <circle cx="16" cy="16" r="7" fill="#000039"/>
+      <circle cx="16" cy="16" r="3.5" fill="#FF9100"/>
+    </svg>
+    <div>
+      <div class="ob-logo-text">OBILITY<span>.</span></div>
+      <div class="ob-tagline">Claude + Asana skill library</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <div class="ob-badge">Powered by Claude</div>
+  </div>
+</div>
+
+<div class="controls">
+  <div class="search-wrap">
+    <i class="ti ti-search" aria-hidden="true"></i>
+    <input type="text" id="search" placeholder="Search skills..." oninput="render()" />
+  </div>
+  <div class="filter-row">
+    <span class="filter-label">Category</span>
+    <div class="filters" id="cat-filters"></div>
+  </div>
+  <div class="filter-row">
+    <span class="filter-label">Department</span>
+    <div class="filters" id="dept-filters"></div>
+  </div>
+</div>
+
+<p class="count" id="count"></p>
+<div class="grid" id="grid"></div>
+
+<script>
+const ALL_DEPTS = ["CS","PSD","PS","SEO/GEO","Content","Revops","Data"];
+
+const cats = [
+  { id: "all", label: "All" },
+  { id: "task", label: "Task & project management" },
+  { id: "report", label: "Reporting & insights" },
+  { id: "auto", label: "Automation & workflows" },
+];
+
+const depts = ["All", ...ALL_DEPTS];
+
+const skills = [
+  { title: "Asana task prioritizer", cat: "task", icon: "ti-list-check", live: true,
+    lastUpdated: "05/18/2026",
+    depts: ALL_DEPTS,
+    desc: "Prioritizes a team member's Asana tasks across a chosen timeframe, using Google Calendar to surface meeting context, flag heavy days, and identify free time slots — so you always know what to tackle first." },
+  { title: "Find and summarize overdue tasks", cat: "report", icon: "ti-clock-exclamation", live: false,
+    depts: ALL_DEPTS,
+    desc: "Scans a project or portfolio for overdue tasks and produces a concise summary grouped by assignee, giving managers instant visibility into what's slipping." },
+  { title: "Google Ads QA", cat: "auto", icon: "ti-ad", live: true,
+    depts: ["PSD"],
+    desc: "Runs a structured QA audit on a Google Ads account against Obility's launch checklist and best practices." },
+  { title: "LinkedIn demo analysis", cat: "report", icon: "ti-brand-linkedin", live: true,
+    depts: ["PS"],
+    desc: "Pulls LinkedIn Ads demographic data, analyzes audience performance across job titles, functions, industries, and companies, and delivers a formatted Excel workbook with insights." },
+  { title: "Meeting Asana sync", cat: "task", icon: "ti-notes", live: true,
+    depts: ["CS"],
+    desc: "Takes meeting notes or transcripts and converts action items into Asana tasks, automatically assigning owners and due dates where mentioned, so nothing falls through the cracks." },
+  { title: "Meeting internal notes", cat: "task", icon: "ti-edit", live: true,
+    depts: ["CS"],
+    desc: "Generates a succinct internal meeting overview from a client call transcript, formatted for pasting into the client's internal notes doc." },
+  { title: "Meeting next steps", cat: "task", icon: "ti-file-text", live: true,
+    lastUpdated: "05/18/2026",
+    depts: ["CS"],
+    desc: "Extracts next steps from Zoom/Teams transcripts, searches Google Drive for client resource links to embed in action items, formats output for a client-facing follow-up email, and optionally creates Asana tasks." },
+  { title: "Monthly report task creator", cat: "report", icon: "ti-calendar-stats", live: true,
+    depts: ["CS"],
+    desc: "Creates multiple monthly snapshot report tasks at once and assigns them out based on month and due date, keeping your reporting cadence consistent and on schedule." },
+  { title: "Monthly STR review", cat: "report", icon: "ti-search", live: true,
+    depts: ["PSD"],
+    desc: "Pulls the last 30 days of Google Ads search term data, classifies every query as relevant or not, and generates a categorized report plus negative keyword recommendations." },
+  { title: "Obility PPTX", cat: "auto", icon: "ti-layout-grid", live: true,
+    depts: ALL_DEPTS,
+    desc: "Creates on-brand PowerPoint presentations for Obility using the official brand guidelines and approved slide template." },
+  { title: "Obility writing style", cat: "auto", icon: "ti-pencil", live: true,
+    depts: ALL_DEPTS,
+    desc: "Applies Obility's house writing style to any piece of content — blog posts, landing pages, thought leadership, LinkedIn posts, or any other written deliverable." },
+  { title: "Paid search negative keywords", cat: "auto", icon: "ti-ban", live: true,
+    depts: ["PSD"],
+    desc: "Generates exact match, broad match, and phrase match negative keyword recommendations from a categorized search term report." },
+  { title: "Paid search STR classification", cat: "report", icon: "ti-tags", live: true,
+    depts: ["PSD"],
+    desc: "Reviews, categorizes, and analyzes a Google Ads search term report to identify negative keywords and new keyword opportunities." },
+  { title: "Report task creator", cat: "report", icon: "ti-calendar-stats", live: true,
+    depts: ["CS"],
+    desc: "Automates Asana task creation for monthly and quarterly client reports with correct due dates, Looker Studio links, SME assignees, and CSM collaborators." },
+  { title: "SAM meeting task creator", cat: "task", icon: "ti-calendar", live: true,
+    depts: ["CS"],
+    desc: "Generates 3 months of SAM meeting tasks in Asana for a client, including parent tasks and subtasks for each bi-monthly meeting." },
+  { title: "SPS GEO tracker sync", cat: "auto", icon: "ti-repeat", live: true,
+    depts: ["CS","SEO/GEO"],
+    desc: "Syncs the SPS Commerce SEO/GEO Project Tracker Google Sheet with tasks from the SPS Commerce Asana project." },
+  { title: "Summarize completed work this week", cat: "report", icon: "ti-checks", live: false,
+    depts: ALL_DEPTS,
+    desc: "Pulls tasks completed in the last 7 days and formats them into a clean weekly digest — useful for standups, stakeholder updates, or Friday wrap-ups." },
+];
+
+const badgeClass = { task: "badge-task", report: "badge-report", auto: "badge-auto" };
+const iconClass  = { task: "icon-task",  report: "icon-report",  auto: "icon-auto"  };
+const catLabel   = { task: "Task & project management", report: "Reporting & insights", auto: "Automation & workflows" };
+
+let activeCat  = "all";
+let activeDept = "All";
+
+function initFilters() {
+  const cf = document.getElementById("cat-filters");
+  cats.forEach(c => {
+    const btn = document.createElement("button");
+    btn.className = "filter-btn" + (c.id === "all" ? " active" : "");
+    btn.textContent = c.label;
+    btn.onclick = () => {
+      activeCat = c.id;
+      document.querySelectorAll("#cat-filters .filter-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      render();
+    };
+    cf.appendChild(btn);
+  });
+
+  const df = document.getElementById("dept-filters");
+  depts.forEach(d => {
+    const btn = document.createElement("button");
+    btn.className = "filter-btn" + (d === "All" ? " dept-active" : "");
+    btn.textContent = d;
+    btn.onclick = () => {
+      activeDept = d;
+      document.querySelectorAll("#dept-filters .filter-btn").forEach(b => b.classList.remove("dept-active"));
+      btn.classList.add("dept-active");
+      render();
+    };
+    df.appendChild(btn);
+  });
+}
+
+function render() {
+  const q = document.getElementById("search").value.toLowerCase();
+  const filtered = skills.filter(s => {
+    const matchCat  = activeCat === "all" || s.cat === activeCat;
+    const matchDept = activeDept === "All" || s.depts.includes(activeDept);
+    const matchQ    = !q || s.title.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q);
+    return matchCat && matchDept && matchQ;
+  });
+
+  const grid = document.getElementById("grid");
+  const live = filtered.filter(s => s.live).length;
+  const soon = filtered.filter(s => !s.live).length;
+  let parts = [filtered.length + " skill" + (filtered.length !== 1 ? "s" : "")];
+  if (live) parts.push(live + " live");
+  if (soon) parts.push(soon + " coming soon");
+  document.getElementById("count").textContent = parts.join(" — ");
+
+  if (!filtered.length) {
+    grid.innerHTML = '<p class="empty">No skills match your search.</p>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(s => {
+    const isAll = s.depts.length === ALL_DEPTS.length;
+    const deptHtml = isAll
+      ? `<span class="dept-tag">All departments</span>`
+      : s.depts.map(d => `<span class="dept-tag">${d}</span>`).join("");
+    return `
+    <div class="card${s.live ? "" : " coming-soon"}">
+      <div class="card-top">
+        <div class="card-icon ${iconClass[s.cat]}"><i class="ti ${s.icon}" aria-hidden="true"></i></div>
+        <div class="badges">
+          <span class="badge ${badgeClass[s.cat]}">${catLabel[s.cat]}</span>
+          ${!s.live ? '<span class="badge badge-soon">Coming soon</span>' : ""}
+        </div>
+      </div>
+      <p class="card-title">${s.title}</p>
+      <p class="card-desc">${s.desc}</p>
+      <div class="dept-tags">${deptHtml}</div>
+    </div>`;
+  }).join("");
+}
+
+initFilters();
+render();
+</script>
